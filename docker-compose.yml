@@ -1,0 +1,13 @@
+version: '4.39'
+services:
+  mysql:
+    image: mysql:8.3.0
+    container_name: virtual_invoice_sync
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'kellz'
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
