@@ -1,8 +1,6 @@
 package com.beezy.virtual_invoices_sync.controller;
 
-import com.beezy.virtual_invoices_sync.dto.ApiResponses;
-import com.beezy.virtual_invoices_sync.dto.InvoiceRequest;
-import com.beezy.virtual_invoices_sync.dto.ReceiptBody;
+import com.beezy.virtual_invoices_sync.dto.*;
 import com.beezy.virtual_invoices_sync.model.Invoice;
 import com.beezy.virtual_invoices_sync.repository.InvoiceRepository;
 import com.beezy.virtual_invoices_sync.service.InvoiceService;
@@ -108,7 +106,7 @@ public ResponseEntity<?> syncInvoice(@Valid @RequestBody ReceiptBody invoice) {
                             description = "Successfully fetched invoices",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ApiResponses.class)
+                                    schema = @Schema(implementation = ApiResponsesGet.class)
                             )
                     ),
                     @ApiResponse(
@@ -130,10 +128,10 @@ public ResponseEntity<?> syncInvoice(@Valid @RequestBody ReceiptBody invoice) {
             }
     )
     @GetMapping
-    public ResponseEntity<ApiResponses<Page<Invoice>>> getInvoices(
+    public ResponseEntity<ApiResponses<PageResponse<Invoice>>> getInvoices(
             @RequestParam(defaultValue = "0") int page,       // Page number (default: 0)
             @RequestParam(defaultValue = "10") int size,      // Page size (default: 10)
-            @RequestParam(defaultValue = "id") String sortBy, // Sort field (default: "id")
+            @RequestParam(defaultValue = "invoiceNo") String sortBy, // Sort field (default: "id")
             @RequestParam(defaultValue = "asc") String sortOrder // Sort order (default: "asc")
     ) {
         // Create a Pageable object based on the request parameters
@@ -145,12 +143,24 @@ public ResponseEntity<?> syncInvoice(@Valid @RequestBody ReceiptBody invoice) {
         // Check if the result is empty
         if (invoicePage.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponses<>(false, "No invoices found", invoicePage));
+                    .body(new ApiResponses<>(false, "No invoices found",  new PageResponse<>(invoicePage)));
         }
 
         // Return paginated response
-        return ResponseEntity.ok(new ApiResponses<>(true, "Invoices retrieved successfully", invoicePage));
+        return ResponseEntity.ok(new ApiResponses<>(true, "Invoices retrieved successfully", new PageResponse<>(invoicePage)));
     }
+
+//    @GetMapping("/tasks")
+//    public PageResponse<Invoice> getTasks(  @RequestParam(defaultValue = "0") int page,       // Page number (default: 0)
+//                                            @RequestParam(defaultValue = "10") int size,      // Page size (default: 10)
+//                                            @RequestParam(defaultValue = "invoiceNo") String sortBy, // Sort field (default: "id")
+//                                            @RequestParam(defaultValue = "asc") String sortOrder // Sort order (default: "asc")
+//    ) {
+//        // Create a Pageable object based on the request parameters
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrder.equalsIgnoreCase("asc") ? Sort.Order.asc(sortBy) : Sort.Order.desc(sortBy)));
+//
+//        return new PageResponse<>(invoiceService.getAllInvoices(pageable));
+//    }
 
 
     @GetMapping("/{invoiceNo}")
