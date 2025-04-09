@@ -7,7 +7,7 @@ import jakarta.persistence.Convert;
 @Convert(converter = SupplierDataContactConverter.class)
 public class SupplierDataContact {
     String email;
-String phoneNo;
+    String phoneNo;
 
     public SupplierDataContact() {
     }

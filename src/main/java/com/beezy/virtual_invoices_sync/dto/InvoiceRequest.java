@@ -65,7 +65,10 @@ public record InvoiceRequest(
 
         @Convert(converter = SupplierDataConverter.class)
         @NotNull @NotBlank
-        SupplierData supplierData
+        SupplierData supplierData,
+
+        @Convert(converter = ReceiptVerificationConverter.class)
+        ReceiptVerification receiptVerification
 
 ) {
 }

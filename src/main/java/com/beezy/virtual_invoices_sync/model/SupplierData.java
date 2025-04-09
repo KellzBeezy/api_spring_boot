@@ -1,6 +1,11 @@
 package com.beezy.virtual_invoices_sync.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class SupplierData {
+
     String VATNumber;
     String supplierAddress;
     String supplierRegisterName;
@@ -76,5 +81,18 @@ public class SupplierData {
 
     public void setSupplierContacts(SupplierDataContact supplierContacts) {
         this.supplierContacts = supplierContacts;
+    }
+
+    @Override
+    public String toString() {
+        return "SupplierData{" +
+                "VATNumber='" + VATNumber + '\'' +
+                ", supplierAddress='" + supplierAddress + '\'' +
+                ", supplierRegisterName='" + supplierRegisterName + '\'' +
+                ", supplierTIN='" + supplierTIN + '\'' +
+                ", supplierTradeName='" + supplierTradeName + '\'' +
+                ", deviceSerialNumber='" + deviceSerialNumber + '\'' +
+                ", supplierContacts=" + supplierContacts +
+                '}';
     }
 }

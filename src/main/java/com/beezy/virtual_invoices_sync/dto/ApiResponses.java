@@ -20,4 +20,13 @@ public class ApiResponses<T> {
 
     public T getData() { return data; }
     public void setData(T data) { this.data = data; }
+
+    @Override
+    public String toString() {
+        return "ApiResponses{" +
+                "success=" + success +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }

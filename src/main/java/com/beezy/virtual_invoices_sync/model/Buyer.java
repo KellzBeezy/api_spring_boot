@@ -2,15 +2,14 @@ package com.beezy.virtual_invoices_sync.model;
 
 import com.beezy.virtual_invoices_sync.converters.BuyerAddressConverter;
 import com.beezy.virtual_invoices_sync.converters.BuyerContactConverter;
-import com.beezy.virtual_invoices_sync.converters.BuyerConverter;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 
 @Entity
 @Table(name = "buyer_details")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Buyer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +21,7 @@ public class Buyer implements Serializable {
 
     String buyerTIN;
 
-    String vatNumber;
+    String VATNumber;
 
     @Convert(converter = BuyerContactConverter.class)
     BuyerContact buyerContacts;
@@ -38,7 +37,7 @@ public class Buyer implements Serializable {
         this.buyerRegisterName = buyerRegisterName;
         this.buyerTradeName = buyerTradeName;
         this.buyerTIN = buyerTIN;
-        this.vatNumber = vatNumber;
+        this.VATNumber = vatNumber;
         this.buyerContacts = buyerContacts;
         this.buyerAddress = buyerAddress;
     }
@@ -47,7 +46,7 @@ public class Buyer implements Serializable {
         this.buyerRegisterName = buyerRegisterName;
         this.buyerTradeName = buyerTradeName;
         this.buyerTIN = buyerTIN;
-        this.vatNumber = vatNumber;
+        this.VATNumber = vatNumber;
         this.buyerContacts = buyerContacts;
         this.buyerAddress = buyerAddress;
     }
@@ -84,12 +83,12 @@ public class Buyer implements Serializable {
         this.buyerTIN = buyerTIN;
     }
 
-    public String getVatNumber() {
-        return vatNumber;
+    public String getVATNumber() {
+        return VATNumber;
     }
 
-    public void setVatNumber(String vatNumber) {
-        this.vatNumber = vatNumber;
+    public void setVATNumber(String VATNumber) {
+        this.VATNumber = VATNumber;
     }
 
     public BuyerContact getBuyerContacts() {

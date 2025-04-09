@@ -3,6 +3,7 @@ package com.beezy.virtual_invoices_sync.service;
 import com.beezy.virtual_invoices_sync.dto.ApiResponses;
 import com.beezy.virtual_invoices_sync.dto.ReceiptBody;
 import com.beezy.virtual_invoices_sync.model.Invoice;
+import com.beezy.virtual_invoices_sync.model.composte.InvoiceNoDeviceId;
 import com.beezy.virtual_invoices_sync.repository.InvoiceRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InvoiceService {
@@ -27,6 +29,17 @@ public class InvoiceService {
         try{
             Invoice invoice = new Invoice();
 
+            InvoiceNoDeviceId newId = new InvoiceNoDeviceId(invoiceRequest.getReceipt().deviceId(), invoiceRequest.getReceipt().invoiceNo());
+
+            Optional<Invoice> existingInvoice = invoiceRepository.findById(newId);
+
+            if (existingInvoice.isPresent()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponses<>(false, "Invoice with the same Device ID and Invoice Number already exists!", null));
+
+            }
+
+            invoice.setId(newId);
             invoice.setInvoiceNo(invoiceRequest.getReceipt().invoiceNo());
             invoice.setBuyerData(invoiceRequest.getReceipt().buyerData());
             invoice.setCreditDebitNote(invoiceRequest.getReceipt().creditDebitNote());
@@ -46,6 +59,7 @@ public class InvoiceService {
             invoice.setSupplierData(invoiceRequest.getReceipt().supplierData());
             invoice.setReceiptPayments(invoiceRequest.getReceipt().receiptPayments());
             invoice.setReceiptType(invoiceRequest.getReceipt().receiptType());
+            invoice.setReceiptVerification(invoiceRequest.getReceipt().receiptVerification());
 
             Invoice savedInvoice = invoiceRepository.save(invoice);
 
@@ -62,6 +76,10 @@ public class InvoiceService {
         }
     }
 
+    public Invoice getInvoiceByDeviceIdAndInvoiceNumber(String deviceId, String invoiceNumber) {
+        return invoiceRepository.findByDeviceIdAndInvoiceNo(deviceId, invoiceNumber);
+    }
+
     public List<Invoice> getInvoices(){
         return invoiceRepository.findAll();
     }
@@ -71,5 +89,9 @@ public class InvoiceService {
 
     public Invoice getInvoiceByInvoiceNo(String invoiceNo){
         return invoiceRepository.getInvoiceByInvoiceNo(invoiceNo);
+    }
+
+    public Page<Invoice> findByDeviceId(String deviceId, Pageable pageable){
+        return invoiceRepository.findByDeviceId( pageable, deviceId);
     }
 }

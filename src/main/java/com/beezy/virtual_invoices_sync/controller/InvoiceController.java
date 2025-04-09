@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/invoices")
 public class InvoiceController {
@@ -175,5 +177,37 @@ public ResponseEntity<?> syncInvoice(@Valid @RequestBody ReceiptBody invoice) {
         return ResponseEntity.ok(new ApiResponses<>(true, "Invoices retrieved successfully", invoices));
 
     }
+
+    @GetMapping("/device/{deviceId}")
+    public ResponseEntity<ApiResponses<PageResponse<Invoice>>> getByDeviceId(@PathVariable String deviceId, @RequestParam(defaultValue = "0") int page,       // Page number (default: 0)
+                                                               @RequestParam(defaultValue = "10") int size,      // Page size (default: 10)
+                                                               @RequestParam(defaultValue = "invoiceNo") String sortBy, // Sort field (default: "id")
+                                                               @RequestParam(defaultValue = "asc") String sortOrder // Sort order (default: "asc")
+    ) {
+        // Create a Pageable object based on the request parameters
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrder.equalsIgnoreCase("asc") ? Sort.Order.asc(sortBy) : Sort.Order.desc(sortBy)));
+
+        Page<Invoice> invoices = invoiceService.findByDeviceId(deviceId, pageable);
+
+        if (invoices.getTotalElements() == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponses<>(false, "No invoice found", null));
+        }
+
+        return ResponseEntity.ok(new ApiResponses<>(true, "Invoices for "+deviceId+" retrieved successfully", new PageResponse<>(invoices)));
+
+    }
+
+    @GetMapping("/{invoice}/{device}")
+    public ResponseEntity<ApiResponses<Invoice>> getByDeviceAndInvoice(@PathVariable String invoice, @PathVariable String device){
+            Invoice invoices = invoiceService.getInvoiceByDeviceIdAndInvoiceNumber(device,invoice);
+
+            if (invoices == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponses<>(false, "No invoices found", null));
+            }
+
+            return ResponseEntity.ok(new ApiResponses<>(true, "Invoice retrieved successfully", invoices));
+        }
 
 }
